@@ -1,6 +1,6 @@
 from .base_model import BaseModel
 from . import networks
-
+import torch
 
 class TestModel(BaseModel):
     """ This TesteModel can be used to generate CycleGAN results for only one direction.
@@ -57,7 +57,10 @@ class TestModel(BaseModel):
 
         We need to use 'single_dataset' dataset mode. It only load images from one domain.
         """
-        self.real = input['A'].to(self.device)
+        if torch.backends.mps.is_available():
+            self.real = input['A'].to('mps')
+        else:
+            self.real = input['A'].to(self.device)
         self.image_paths = input['A_paths']
 
     def forward(self):
