@@ -1,4 +1,4 @@
-name: pytorch-CycleGAN-and-pix2pix
+name: solar-ai-sharpen
 channels:
 - pytorch
 - defaults

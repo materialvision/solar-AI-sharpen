@@ -32,7 +32,7 @@ class BaseModel(ABC):
         self.opt = opt
         self.gpu_ids = opt.gpu_ids
         self.isTrain = opt.isTrain
-        self.device = torch.device('cuda:{}'.format(self.gpu_ids[0])) if self.gpu_ids else torch.device('cpu')  # get device name: CPU or GPU
+        self.device = torch.device('cuda:{}'.format(self.gpu_ids[0])) if self.gpu_ids else torch.device('mps')  # get device name: CPU or GPU, mps replace cpu here
         self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)  # save all the checkpoints to save_dir
         if opt.preprocess != 'scale_width':  # with [scale_width], input images might have different sizes, which hurts the performance of cudnn.benchmark.
             torch.backends.cudnn.benchmark = True
@@ -189,7 +189,7 @@ class BaseModel(ABC):
                 print('loading the model from %s' % load_path)
                 # if you are using PyTorch newer than 0.4 (e.g., built from
                 # GitHub source), you can remove str() on self.device
-                state_dict = torch.load(load_path, map_location=str(self.device))
+                state_dict = torch.load(load_path, map_location='mps')
                 if hasattr(state_dict, '_metadata'):
                     del state_dict._metadata
 

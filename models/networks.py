@@ -98,7 +98,6 @@ def init_weights(net, init_type='normal', init_gain=0.02):
     print('initialize network with %s' % init_type)
     net.apply(init_func)  # apply the initialization function <init_func>
 
-
 def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
     """Initialize a network: 1. register CPU/GPU device (with multi-GPU support); 2. initialize the network weights
     Parameters:
@@ -109,13 +108,15 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
 
     Return an initialized network.
     """
-    if len(gpu_ids) > 0:
+    if torch.backends.mps.is_available():
+        net.to('mps')    
+    elif len(gpu_ids) > 0:
         assert(torch.cuda.is_available())
         net.to(gpu_ids[0])
         net = torch.nn.DataParallel(net, gpu_ids)  # multi-GPUs
+
     init_weights(net, init_type, init_gain=init_gain)
     return net
-
 
 def define_G(input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
     """Create a generator
