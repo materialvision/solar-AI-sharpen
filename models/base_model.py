@@ -156,6 +156,11 @@ class BaseModel(ABC):
                 if len(self.gpu_ids) > 0 and torch.cuda.is_available():
                     torch.save(net.module.cpu().state_dict(), save_path)
                     net.cuda(self.gpu_ids[0])
+                # Check if MPS (Apple Silicon GPU) is available
+                elif torch.backends.mps.is_available():
+                    # Save the model state dict from MPS device to CPU, then move back to MPS
+                    torch.save(net.to('cpu').state_dict(), save_path)
+                    net.to('mps')
                 else:
                     torch.save(net.cpu().state_dict(), save_path)
 

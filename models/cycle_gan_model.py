@@ -87,7 +87,10 @@ class CycleGANModel(BaseModel):
             self.fake_A_pool = ImagePool(opt.pool_size)  # create image buffer to store previously generated images
             self.fake_B_pool = ImagePool(opt.pool_size)  # create image buffer to store previously generated images
             # define loss functions
-            self.criterionGAN = networks.GANLoss(opt.gan_mode).to(self.device)  # define GAN loss.
+            if torch.backends.mps.is_available():
+                self.criterionGAN = networks.GANLoss(opt.gan_mode).to('mps')  # define GAN loss.
+            else:  
+                self.criterionGAN = networks.GANLoss(opt.gan_mode).to(self.device)  # define GAN loss.   
             self.criterionCycle = torch.nn.L1Loss()
             self.criterionIdt = torch.nn.L1Loss()
             # initialize optimizers; schedulers will be automatically created by function <BaseModel.setup>.
