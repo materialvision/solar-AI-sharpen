@@ -5,6 +5,7 @@ import numpy as np
 import scipy as sp
 import math
 import os
+from PIL import Image
 
 # Turns a centered solar disk image from a disk to a rectangle,
 # with rows being angle and columns being distance from center
@@ -364,8 +365,27 @@ def process_image_folder(folder_path,result_path):
             gamma=adjust_gamma(sixteenbit,1.5)
             # Save the enhanced image
             result_image_path = os.path.join(result_path, filename)
+
             cv.imwrite(result_image_path, gamma)
+            crop_center_to_square(result_image_path)
             print('processed with sunrast: '+ result_image_path)
+
+def crop_center_to_square(image_path):
+    with Image.open(image_path) as img:
+        width, height = img.size
+
+        # Determine the size of the square based on the shortest side
+        new_size = min(width, height)
+
+        # Calculate the left, top, right, and bottom coordinates for the crop
+        left = (width - new_size) / 2
+        top = (height - new_size) / 2
+        right = (width + new_size) / 2
+        bottom = (height + new_size) / 2
+
+        # Crop the center of the image to a square
+        img_cropped = img.crop((left, top, right, bottom))
+        img_cropped.save(image_path)  # Optionally, you can save it to a new file instead
 
 if __name__ == "__main__":
     # Example usage
